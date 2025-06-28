@@ -2,7 +2,6 @@ package com.vwdhub.vending.domain.model;
 
 import lombok.Getter;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
