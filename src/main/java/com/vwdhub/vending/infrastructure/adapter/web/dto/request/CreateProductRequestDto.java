@@ -17,7 +17,6 @@ import java.util.UUID;
 @Builder
 public class CreateProductRequestDto {
 
-    @JsonIgnore
     UUID dispenserId;
 
     @Schema(description = "Product name", example = "Fanta")
