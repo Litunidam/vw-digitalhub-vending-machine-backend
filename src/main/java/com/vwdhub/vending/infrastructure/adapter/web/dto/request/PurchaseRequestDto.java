@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ public class PurchaseRequestDto {
     @Schema(description = "Identifier of the product", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6")
     private final UUID productId;
 
+    @NotNull(message = "Coins are required")
     @Schema(
             description = "Amount for each coin",
             type = "object",
@@ -32,6 +34,7 @@ public class PurchaseRequestDto {
     )
     private final Map<Coin, Integer> coins;
 
+    @NotNull(message = "Need to confirm the purchase")
     private final boolean confirmed;
 
 }

@@ -1,11 +1,15 @@
 package com.vwdhub.vending.infrastructure.event;
 
+import com.vwdhub.vending.common.Constants;
 import com.vwdhub.vending.domain.event.LCDNotificationEvent;
 import com.vwdhub.vending.domain.event.RepositionEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.kafka.KafkaException;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -14,8 +18,6 @@ import org.springframework.util.concurrent.FailureCallback;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.SuccessCallback;
 
-import static com.vwdhub.vending.common.Constants.LCD_TOPIC;
-import static com.vwdhub.vending.common.Constants.REPOSITION_TOPIC;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -50,7 +52,7 @@ class KafkaEventProducerTest {
 
         producer.publish(event);
 
-        verify(kafkaTemplate).send(LCD_TOPIC, "OK_LCD");
+        verify(kafkaTemplate).send(Constants.LCD_TOPIC, "OK_LCD");
         verify(future).addCallback(successCaptor.capture(), failureCaptor.capture());
 
         assertThatNoException().isThrownBy(() ->
@@ -81,7 +83,7 @@ class KafkaEventProducerTest {
 
         producer.publish(event);
 
-        verify(kafkaTemplate).send(REPOSITION_TOPIC, "OK_REPO");
+        verify(kafkaTemplate).send(Constants.REPOSITION_TOPIC, "OK_REPO");
         verify(future).addCallback(successCaptor.capture(), failureCaptor.capture());
 
         assertThatNoException().isThrownBy(() ->

@@ -1,21 +1,24 @@
 package com.vwdhub.vending.infrastructure.persistence.repository;
 
 import com.vwdhub.vending.domain.model.*;
-import com.vwdhub.vending.domain.model.valueobject.ChangeAndProduct;
-import com.vwdhub.vending.infrastructure.persistence.entity.*;
+import com.vwdhub.vending.infrastructure.persistence.entity.CoinEntity;
+import com.vwdhub.vending.infrastructure.persistence.entity.DispenserEntity;
+import com.vwdhub.vending.infrastructure.persistence.entity.DispenserStatusEntity;
+import com.vwdhub.vending.infrastructure.persistence.entity.ProductEntity;
 import com.vwdhub.vending.infrastructure.persistence.mapper.DispenserMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.*;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

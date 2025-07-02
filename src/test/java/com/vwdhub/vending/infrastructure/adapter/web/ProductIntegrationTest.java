@@ -23,7 +23,8 @@ import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -44,14 +45,13 @@ class ProductIntegrationTest {
 
     @BeforeEach
     void setUp() {
-        // Creamos un dispensador vacío para que exista la FK
-        DispenserEntity de = DispenserEntity.builder()
+        DispenserEntity dispenserEntity = DispenserEntity.builder()
                 .status(DispenserStatusEntity.AVAILABLE)
                 .products(new ArrayList<>())
                 .dispenserMoney(new ArrayList<>())
                 .build();
-        de = dispenserRepository.save(de);
-        dispenserId = de.getId();
+        dispenserEntity = dispenserRepository.save(dispenserEntity);
+        dispenserId = dispenserEntity.getId();
     }
 
     @Test

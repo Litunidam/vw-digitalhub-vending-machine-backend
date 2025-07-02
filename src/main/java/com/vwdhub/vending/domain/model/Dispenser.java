@@ -1,15 +1,17 @@
 package com.vwdhub.vending.domain.model;
 
+import com.vwdhub.vending.common.Constants;
+import com.vwdhub.vending.domain.exception.ChangeException;
+import com.vwdhub.vending.domain.exception.OutOfOrderException;
+import com.vwdhub.vending.domain.exception.ProductNotFoundException;
 import com.vwdhub.vending.domain.model.valueobject.ChangeAndProduct;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
-import static com.vwdhub.vending.common.Constants.*;
 
 @Getter
 @Setter
@@ -41,14 +43,14 @@ public class Dispenser {
     public Product findProduct(UUID productId) {
         Product product = products.get(productId);
         if (product == null) {
-            throw new NoSuchElementException(PRODUCT_NOT_FOUND);
+            throw new ProductNotFoundException(Constants.PRODUCT_NOT_FOUND);
         }
         return product;
     }
 
     public void insertMoney(Money money) {
         if (status != DispenserStatus.AVAILABLE) {
-            throw new IllegalStateException(OUT_OF_ORDER);
+            throw new OutOfOrderException(Constants.OUT_OF_ORDER);
         }
         if (insertedMoney == null) {
             insertedMoney = money;
@@ -64,11 +66,11 @@ public class Dispenser {
         BigDecimal total = insertedMoney.totalAmount().setScale(2, RoundingMode.DOWN);
 
         if (total.compareTo(price) < 0) {
-            throw new IllegalArgumentException(NOT_ENOUGH_MONEY.concat(total.toString()));
+            throw new ChangeException(Constants.NOT_ENOUGH_MONEY.concat(total.toString()));
         }
         BigDecimal changeAmount = total.subtract(price);
         if (!dispenserMoney.canProvideChange(changeAmount)) {
-            throw new IllegalArgumentException(NOT_ENOUGH_MONEY_TO_CHANGE.concat(changeAmount.toString()));
+            throw new ChangeException(Constants.NOT_ENOUGH_MONEY_TO_CHANGE.concat(changeAmount.toString()));
         }
         dispenserMoney = dispenserMoney.add(insertedMoney);
 
@@ -81,7 +83,7 @@ public class Dispenser {
 
     private void isAvailable() {
         if (status != DispenserStatus.CHECKING) {
-            throw new IllegalStateException(OUT_OF_ORDER);
+            throw new OutOfOrderException(Constants.OUT_OF_ORDER);
         }
     }
 

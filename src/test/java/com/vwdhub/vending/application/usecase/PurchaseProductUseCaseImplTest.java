@@ -1,8 +1,10 @@
 package com.vwdhub.vending.application.usecase;
 
 import com.vwdhub.vending.application.usecase.impl.PurchaseProductUseCaseImpl;
+import com.vwdhub.vending.common.Constants;
 import com.vwdhub.vending.domain.event.LCDNotificationEvent;
 import com.vwdhub.vending.domain.event.RepositionEvent;
+import com.vwdhub.vending.domain.exception.DispenserNotFoundException;
 import com.vwdhub.vending.domain.model.*;
 import com.vwdhub.vending.domain.model.valueobject.ChangeAndProduct;
 import com.vwdhub.vending.domain.repository.DispenserRepository;
@@ -23,8 +25,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.vwdhub.vending.common.Constants.*;
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,11 +42,11 @@ class PurchaseProductUseCaseImplTest {
     private PurchaseProductUseCaseImpl useCase;
 
     private final UUID dispenserId = UUID.randomUUID();
-    private final UUID productId   = UUID.randomUUID();
+    private final UUID productId = UUID.randomUUID();
 
     private Dispenser dispenser;
-    private Money     initialMoney;
-    private Product   product;
+    private Money initialMoney;
+    private Product product;
 
     @BeforeEach
     void setUp() {
@@ -68,7 +70,7 @@ class PurchaseProductUseCaseImplTest {
                 useCase.purchase(dispenserId, productId, initialMoney, false)
         )
                 .isInstanceOf(NoSuchElementException.class)
-                .hasMessage(PURCHASE_NOT_CONFIRMED);
+                .hasMessage(Constants.PURCHASE_NOT_CONFIRMED);
 
         verifyNoInteractions(dispenserRepository, eventProducer);
     }
@@ -82,12 +84,12 @@ class PurchaseProductUseCaseImplTest {
         assertThatThrownBy(() ->
                 useCase.purchase(dispenserId, productId, initialMoney, true)
         )
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage(DISPENSER_NOT_FOUND);
+                .isInstanceOf(DispenserNotFoundException.class)
+                .hasMessage(Constants.DISPENSER_NOT_FOUND);
 
         verify(eventProducer).publish((LCDNotificationEvent) argThat(evt ->
                 evt instanceof LCDNotificationEvent &&
-                        ((LCDNotificationEvent)evt).getState().equals(CONFIRMED)
+                        ((LCDNotificationEvent) evt).getState().equals(Constants.CONFIRMED)
         ));
         verify(dispenserRepository).findById(dispenserId);
         verifyNoMoreInteractions(eventProducer, dispenserRepository);
@@ -100,7 +102,7 @@ class PurchaseProductUseCaseImplTest {
                 .thenReturn(Optional.of(dispenser));
 
         ChangeAndProduct cap = ChangeAndProduct.builder()
-                .change(new Money(Map.of()))    // sin cambio
+                .change(new Money(Map.of()))
                 .product(product)
                 .dispenserMoney(initialMoney)
                 .build();
@@ -114,17 +116,17 @@ class PurchaseProductUseCaseImplTest {
 
         inOrder.verify(eventProducer).publish((LCDNotificationEvent) argThat(evt ->
                 evt instanceof LCDNotificationEvent &&
-                        ((LCDNotificationEvent)evt).getState().equals(CONFIRMED)
+                        ((LCDNotificationEvent) evt).getState().equals(Constants.CONFIRMED)
         ));
         inOrder.verify(dispenser).insertMoney(initialMoney);
         inOrder.verify(eventProducer).publish((LCDNotificationEvent) argThat(evt ->
                 evt instanceof LCDNotificationEvent &&
-                        ((LCDNotificationEvent)evt).getState().equals(VALIDATE_MONEY)
+                        ((LCDNotificationEvent) evt).getState().equals(Constants.VALIDATE_MONEY)
         ));
         inOrder.verify(dispenser).purchase(productId);
         inOrder.verify(eventProducer).publish((LCDNotificationEvent) argThat(evt ->
                 evt instanceof LCDNotificationEvent &&
-                        ((LCDNotificationEvent)evt).getState().equals(DISPENSING_PRODUCT)
+                        ((LCDNotificationEvent) evt).getState().equals(Constants.DISPENSING_PRODUCT)
         ));
         inOrder.verify(dispenser).setStatus(DispenserStatus.AVAILABLE);
         inOrder.verify(dispenserRepository).save(dispenser);
@@ -160,6 +162,6 @@ class PurchaseProductUseCaseImplTest {
 
         RepositionEvent evt = captor.getValue();
         assertThat(evt.getState())
-                .isEqualTo(PRODUCT_STOCK_ZERO + productId.toString());
+                .isEqualTo(Constants.PRODUCT_STOCK_ZERO + productId);
     }
 }

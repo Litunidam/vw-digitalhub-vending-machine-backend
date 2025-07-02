@@ -1,9 +1,12 @@
 package com.vwdhub.vending.infrastructure.persistence.mapper;
 
-import com.vwdhub.vending.domain.model.*;
+import com.vwdhub.vending.domain.model.Coin;
+import com.vwdhub.vending.domain.model.DispenserStatus;
+import com.vwdhub.vending.domain.model.Money;
+import com.vwdhub.vending.domain.model.Product;
 import com.vwdhub.vending.infrastructure.persistence.entity.CoinEntity;
-import com.vwdhub.vending.infrastructure.persistence.entity.ProductEntity;
 import com.vwdhub.vending.infrastructure.persistence.entity.DispenserStatusEntity;
+import com.vwdhub.vending.infrastructure.persistence.entity.ProductEntity;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -17,8 +20,6 @@ import static org.assertj.core.api.Assertions.tuple;
 class DispenserMapperTest {
 
     private final DispenserMapper mapper = Mappers.getMapper(DispenserMapper.class);
-
-    // ------ productsMap ------
 
     @Test
     void productsMapreturnEmptyMap() {
@@ -39,7 +40,7 @@ class DispenserMapperTest {
         e1.setId(id1);
         e1.setName("P1");
         e1.setPrice(new BigDecimal("1.00"));
-        e1.setExpiration(LocalDate.of(2025,1,1));
+        e1.setExpiration(LocalDate.of(2025, 1, 1));
         e1.setStock(5);
 
         UUID id2 = UUID.randomUUID();
@@ -47,7 +48,7 @@ class DispenserMapperTest {
         e2.setId(id2);
         e2.setName("P2");
         e2.setPrice(new BigDecimal("2.50"));
-        e2.setExpiration(LocalDate.of(2025,6,1));
+        e2.setExpiration(LocalDate.of(2025, 6, 1));
         e2.setStock(0);
 
         List<ProductEntity> list = List.of(e1, e2);
@@ -85,7 +86,7 @@ class DispenserMapperTest {
                 .id(id)
                 .name("DX")
                 .price(new BigDecimal("9.99"))
-                .expiration(LocalDate.of(2024,12,31))
+                .expiration(LocalDate.of(2024, 12, 31))
                 .stock(3)
                 .build();
         Map<UUID, Product> src = new LinkedHashMap<>();

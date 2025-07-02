@@ -1,7 +1,6 @@
 package com.vwdhub.vending.infrastructure.persistence.entity;
 
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

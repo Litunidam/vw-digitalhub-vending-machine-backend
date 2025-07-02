@@ -1,6 +1,8 @@
 package com.vwdhub.vending.domain.model;
 
 import com.vwdhub.vending.common.Constants;
+import com.vwdhub.vending.domain.exception.InsufficientStockException;
+import com.vwdhub.vending.domain.exception.ProductExpiredException;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -58,7 +60,7 @@ class ProductTest {
     }
 
     @Test
-    void reduceStockThrowsWhenStockZero() {
+    void reduceStockThrowsInsufficientStockExceptionWhenStockZero() {
         Product product = Product.builder()
                 .id(SOME_ID)
                 .name(SOME_NAME)
@@ -68,7 +70,7 @@ class ProductTest {
                 .build();
 
         assertThatThrownBy(product::reduceStock)
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(InsufficientStockException.class)
                 .hasMessage(Constants.PRODUCT_STOCK_ZERO);
     }
 
@@ -94,15 +96,14 @@ class ProductTest {
                 .name(SOME_NAME)
                 .price(SOME_PRICE)
                 .stock(1)
-                .expiration(LocalDate.now())  // equal to today is OK
+                .expiration(LocalDate.now())
                 .build();
 
-        // no exception
         product.checkValid();
     }
 
     @Test
-    void throwsWhenStockZero() {
+    void throwsInsufficientStockExceptionWhenStockZero() {
         Product product = Product.builder()
                 .id(SOME_ID)
                 .name(SOME_NAME)
@@ -112,12 +113,12 @@ class ProductTest {
                 .build();
 
         assertThatThrownBy(product::checkValid)
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(InsufficientStockException.class)
                 .hasMessage(Constants.PRODUCT_STOCK_ZERO);
     }
 
     @Test
-    void throwsWhenExpiredEvenIfInStock() {
+    void throwsInsufficientStockExceptionWhenExpiredEvenIfInStock() {
         Product product = Product.builder()
                 .id(SOME_ID)
                 .name(SOME_NAME)
@@ -127,7 +128,7 @@ class ProductTest {
                 .build();
 
         assertThatThrownBy(product::checkValid)
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(ProductExpiredException.class)
                 .hasMessage(Constants.PRODUCT_EXPIRED);
     }
 }

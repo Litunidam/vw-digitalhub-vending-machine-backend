@@ -2,19 +2,21 @@ package com.vwdhub.vending.application.usecase;
 
 import com.vwdhub.vending.application.usecase.impl.GetDispenserStatusUseCaseImpl;
 import com.vwdhub.vending.common.Constants;
+import com.vwdhub.vending.domain.exception.DispenserNotFoundException;
 import com.vwdhub.vending.domain.model.DispenserStatus;
 import com.vwdhub.vending.domain.repository.DispenserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,14 +49,14 @@ class GetDispenserStatusUseCaseImplTest {
     }
 
     @Test
-    void getDispenserStatus_whenNotFound_throwsNoSuchElement() {
+    void getDispenserStatusThrowsDispenserNotFoundException() {
 
         when(dispenserRepository.findStatusById(dispenserId))
                 .thenReturn(Optional.empty());
 
-        NoSuchElementException ex = catchThrowableOfType(
+        DispenserNotFoundException ex = catchThrowableOfType(
                 () -> useCase.getDispenserStatus(dispenserId),
-                NoSuchElementException.class
+                DispenserNotFoundException.class
         );
         assertThat(ex).hasMessage(Constants.DISPENSER_NOT_FOUND);
 

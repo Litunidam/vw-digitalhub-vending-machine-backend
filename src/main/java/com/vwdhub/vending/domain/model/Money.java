@@ -2,6 +2,8 @@ package com.vwdhub.vending.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.vwdhub.vending.common.Constants;
+import com.vwdhub.vending.domain.exception.ChangeException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,8 +14,6 @@ import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.vwdhub.vending.common.Constants.NOT_ENOUGH_MONEY_TO_CHANGE;
 
 @Getter
 @Builder
@@ -51,7 +51,7 @@ public class Money {
         for (Coin coin : Coin.values()) {
             int count = coins.getOrDefault(coin, 0) - money.coins.getOrDefault(coin, 0);
             if (count < 0) {
-                throw new IllegalStateException(NOT_ENOUGH_MONEY_TO_CHANGE);
+                throw new ChangeException(Constants.NOT_ENOUGH_MONEY_TO_CHANGE);
             }
             result.put(coin, count);
         }
@@ -73,7 +73,7 @@ public class Money {
             }
         }
         if (remaining.compareTo(BigDecimal.ZERO) > 0) {
-            throw new IllegalArgumentException(NOT_ENOUGH_MONEY_TO_CHANGE.concat(amount.toString()));
+            throw new ChangeException(Constants.NOT_ENOUGH_MONEY_TO_CHANGE.concat(amount.toString()));
         }
         return new Money(change);
     }
@@ -82,7 +82,7 @@ public class Money {
         try {
             change(amount);
             return true;
-        } catch (IllegalArgumentException e) {
+        } catch (ChangeException e) {
             return false;
         }
     }

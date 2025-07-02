@@ -1,5 +1,9 @@
 package com.vwdhub.vending.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vwdhub.vending.common.Constants;
+import com.vwdhub.vending.domain.exception.InsufficientStockException;
+import com.vwdhub.vending.domain.exception.ProductExpiredException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,9 +12,6 @@ import lombok.Setter;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
-
-import static com.vwdhub.vending.common.Constants.PRODUCT_EXPIRED;
-import static com.vwdhub.vending.common.Constants.PRODUCT_STOCK_ZERO;
 
 @Builder
 @AllArgsConstructor
@@ -23,13 +24,14 @@ public class Product {
     private Integer stock;
     private LocalDate expiration;
 
+    @JsonIgnore
     public boolean isInStock() {
         return stock > 0;
     }
 
     public void reduceStock() {
         if (!isInStock()) {
-            throw new IllegalStateException(PRODUCT_STOCK_ZERO);
+            throw new InsufficientStockException(Constants.PRODUCT_STOCK_ZERO);
         }
         stock--;
     }
@@ -40,10 +42,10 @@ public class Product {
 
     public void checkValid() {
         if (!isInStock()) {
-            throw new IllegalStateException(PRODUCT_STOCK_ZERO);
+            throw new InsufficientStockException(Constants.PRODUCT_STOCK_ZERO);
         }
         if (expiration.isBefore(LocalDate.now())) {
-            throw new IllegalStateException(PRODUCT_EXPIRED);
+            throw new ProductExpiredException(Constants.PRODUCT_EXPIRED);
         }
     }
 }

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class CoinTest {
 

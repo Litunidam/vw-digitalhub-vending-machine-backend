@@ -1,21 +1,24 @@
 package com.vwdhub.vending.application.usecase;
 
 import com.vwdhub.vending.application.usecase.impl.GetProductStockUseCaseImpl;
+import com.vwdhub.vending.common.Constants;
+import com.vwdhub.vending.domain.exception.ProductNotFoundException;
 import com.vwdhub.vending.domain.model.Product;
 import com.vwdhub.vending.domain.repository.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.webjars.NotFoundException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowableOfType;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,16 +59,16 @@ class GetProductStockUseCaseImplTest {
     }
 
     @Test
-    void whenProductNotExistsThrowsNotFoundException() {
+    void whenProductNotExistsThrowsProductNotFoundException() {
 
         when(productRepository.findById(productId))
                 .thenReturn(Optional.empty());
 
-        NotFoundException ex = catchThrowableOfType(
+        ProductNotFoundException ex = catchThrowableOfType(
                 () -> useCase.getProduct(productId),
-                NotFoundException.class
+                ProductNotFoundException.class
         );
-        assertThat(ex).hasMessage(productId.toString());
+        assertThat(ex).hasMessage(Constants.PRODUCT_NOT_FOUND);
 
         verify(productRepository).findById(productId);
         verifyNoMoreInteractions(productRepository);

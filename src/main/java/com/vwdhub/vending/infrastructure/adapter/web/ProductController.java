@@ -8,10 +8,13 @@ import com.vwdhub.vending.infrastructure.adapter.web.dto.response.ProductRespons
 import com.vwdhub.vending.infrastructure.adapter.web.dto.response.ProductStockResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.UUID;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/vending/product")
 public class ProductController {
@@ -24,7 +27,7 @@ public class ProductController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody CreateProductRequestDto request) {
+    public ResponseEntity<ProductResponse> createProduct(@RequestBody @Valid CreateProductRequestDto request) {
         Product product = addProductUseCase.add(
                 request.getDispenserId(),
                 request.getName(),

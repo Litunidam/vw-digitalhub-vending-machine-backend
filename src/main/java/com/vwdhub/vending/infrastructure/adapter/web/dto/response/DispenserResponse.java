@@ -3,7 +3,6 @@ package com.vwdhub.vending.infrastructure.adapter.web.dto.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vwdhub.vending.domain.model.DispenserStatus;
 import com.vwdhub.vending.domain.model.Money;
-import com.vwdhub.vending.domain.model.Product;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
