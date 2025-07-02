@@ -18,7 +18,6 @@ import java.util.UUID;
 @Builder
 public class CreateDispenserRequestDto {
 
-    @JsonIgnore
     UUID id;
 
     List<Product> products;
