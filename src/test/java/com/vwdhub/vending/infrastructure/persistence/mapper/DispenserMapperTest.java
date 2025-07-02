@@ -65,7 +65,7 @@ class DispenserMapperTest {
         assertThat(p2.getName()).isEqualTo("P2");
         assertThat(p2.getPrice()).isEqualByComparingTo("2.50");
     }
-    
+
     @Test
     void fromProductsMapreturnEmptyList() {
         List<ProductEntity> result = mapper.fromProductsMap(null);
@@ -99,7 +99,7 @@ class DispenserMapperTest {
         assertThat(ent.getName()).isEqualTo("DX");
         assertThat(ent.getStock()).isEqualTo(3);
     }
-    
+
     @Test
     void toMoneyreturnNull() {
         assertThat(mapper.toMoney(null)).isNull();
@@ -122,7 +122,7 @@ class DispenserMapperTest {
                 .containsEntry(Coin.EUR_1, 2)
                 .containsEntry(Coin.CENT_50, 5);
     }
-    
+
     @Test
     void fromMoneyReturnEmptyList() {
         assertThat(mapper.fromMoney(null)).isEmpty();
