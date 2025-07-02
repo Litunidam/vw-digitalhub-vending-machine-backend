@@ -59,7 +59,7 @@ The architecture follows **Hexagonal / Clean Architecture** and **DDD** principl
 - **Spring Boot 2.7.12**
 - **Spring Data JPA**
 - **H2**, **PostgreSQL**
-- **Testcontainers** (PostgreSQL, Kafka)
+- **Kafka**
 - **Springdoc OpenAPI** (Swagger UI)
 - **Lombok**, **MapStruct**
 - **Maven**
