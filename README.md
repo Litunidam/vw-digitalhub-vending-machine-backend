@@ -31,6 +31,7 @@ This microservice exposes endpoints to:
 - Register new **Dispensers**
 - Add **Products** to a dispenser
 - Get the stock of a product in a dispenser
+- Get **Dispenser** info
 - Purchases a product and change returns
 
 The architecture follows **Hexagonal / Clean Architecture** and **DDD** principles:
@@ -294,7 +295,7 @@ The service will be available at http://localhost:8080.
     ```bash
     mvn test -Dtest=*Test
   
-- Integration Tests requires Docker & Testcontainers
+- Integration Tests requires Docker
 
 ## Contributing
 
