@@ -1,5 +1,6 @@
 package com.vwdhub.vending.infrastructure.adapter.web.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vwdhub.vending.domain.model.DispenserStatus;
 import com.vwdhub.vending.domain.model.Money;
 import com.vwdhub.vending.domain.model.Product;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Builder
 public class CreateDispenserRequestDto {
 
+    @JsonIgnore
     UUID id;
 
     List<Product> products;
