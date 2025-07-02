@@ -7,7 +7,6 @@ import lombok.Getter;
 @Builder
 @Getter
 @AllArgsConstructor
-public class LCDNotificationEvent {
+public class RepositionEvent {
     private final String state;
 }
-
