@@ -136,7 +136,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M8</version>
                 <configuration>
-                    <!-- usa JUnit Platform (JUnit 5) -->
                     <useModulePath>false</useModulePath>
                 </configuration>
             </plugin>
