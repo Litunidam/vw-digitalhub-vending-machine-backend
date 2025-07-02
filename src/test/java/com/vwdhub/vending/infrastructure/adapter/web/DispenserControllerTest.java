@@ -77,7 +77,7 @@ class DispenserControllerTest {
         CreateDispenserRequestDto dispenserRequest = CreateDispenserRequestDto.builder()
                 .id(id)
                 .products(new ArrayList<>())
-                .initialCoins(money)   // <-- aquí usamos Money, no Map
+                .initialCoins(money)
                 .status(DispenserStatus.AVAILABLE)
                 .build();
 

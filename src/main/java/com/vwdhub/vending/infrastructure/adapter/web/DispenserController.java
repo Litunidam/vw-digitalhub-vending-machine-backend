@@ -53,8 +53,8 @@ public class DispenserController {
     }
 
     @GetMapping("/dispenser/{id}")
-    public ResponseEntity<DispenserResponse> getDispenser(@PathVariable UUID id) {
-        Dispenser dispenser = getDispenserUseCase.get(id);
+    public ResponseEntity<DispenserResponse> getDispenser(@PathVariable("id") UUID dispenserId) {
+        Dispenser dispenser = getDispenserUseCase.get(dispenserId);
         DispenserResponse response = fromDispenserToDispenseResponse(dispenser);
         return ResponseEntity.ok(response);
     }
@@ -79,8 +79,8 @@ public class DispenserController {
     }
 
     @GetMapping(path = "/dispenser/{id}/status", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<DispenserStatusResponse> getDispenserStatus(@PathVariable("id") UUID id) {
-        DispenserStatus status = getDispenserStatusUseCase.getDispenserStatus(id);
+    public ResponseEntity<DispenserStatusResponse> getDispenserStatus(@PathVariable("id") UUID dispenserId) {
+        DispenserStatus status = getDispenserStatusUseCase.getDispenserStatus(dispenserId);
         DispenserStatusResponse dispenserStatusResponse = DispenserStatusResponse.builder().status(status.name()).build();
         return ResponseEntity.ok(dispenserStatusResponse);
     }

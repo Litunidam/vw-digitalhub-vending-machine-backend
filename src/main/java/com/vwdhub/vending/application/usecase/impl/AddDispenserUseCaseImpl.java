@@ -32,7 +32,7 @@ public class AddDispenserUseCaseImpl implements AddDispenserUseCase {
     }
 
     private Product mapId(Product product) {
-        if(product.getId() == null) {
+        if (product.getId() == null) {
             product = Product.builder()
                     .id(UUID.randomUUID())
                     .name(product.getName())

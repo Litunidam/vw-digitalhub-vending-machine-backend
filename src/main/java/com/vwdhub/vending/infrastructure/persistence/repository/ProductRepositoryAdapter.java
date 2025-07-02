@@ -2,7 +2,6 @@ package com.vwdhub.vending.infrastructure.persistence.repository;
 
 import com.vwdhub.vending.domain.model.Product;
 import com.vwdhub.vending.domain.repository.ProductRepository;
-import com.vwdhub.vending.infrastructure.persistence.entity.ProductEntity;
 import com.vwdhub.vending.infrastructure.persistence.mapper.ProductMapper;
 import org.springframework.stereotype.Repository;
 

@@ -1,15 +1,20 @@
 package com.vwdhub.vending.domain.model;
 
+import com.vwdhub.vending.common.Constants;
+import com.vwdhub.vending.domain.exception.*;
 import com.vwdhub.vending.domain.model.valueobject.ChangeAndProduct;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 
-import static com.vwdhub.vending.common.Constants.*;
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class DispenserTest {
 
@@ -64,10 +69,10 @@ class DispenserTest {
     }
 
     @Test
-    void findProductThrows() {
+    void findProductThrowsProductNotFoundException() {
         assertThatThrownBy(() -> dispenser.findProduct(UUID.randomUUID()))
-                .isInstanceOf(NoSuchElementException.class)
-                .hasMessage(PRODUCT_NOT_FOUND);
+                .isInstanceOf(ProductNotFoundException.class)
+                .hasMessage(Constants.PRODUCT_NOT_FOUND);
     }
 
     @Test
@@ -80,35 +85,35 @@ class DispenserTest {
     }
 
     @Test
-    void insertMoneyThrows() {
+    void insertMoneyThrowsOutOfOrderException() {
         dispenser.setStatus(DispenserStatus.OUT_OF_ORDER);
         assertThatThrownBy(() -> dispenser.insertMoney(new Money(Map.of())))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage(OUT_OF_ORDER);
+                .isInstanceOf(OutOfOrderException.class)
+                .hasMessage(Constants.OUT_OF_ORDER);
     }
 
     @Test
     void purchaseWithoutInsertThrowsOutOfOrder() {
         assertThatThrownBy(() -> dispenser.purchase(productId))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage(OUT_OF_ORDER);
+                .isInstanceOf(OutOfOrderException.class)
+                .hasMessage(Constants.OUT_OF_ORDER);
     }
 
     @Test
-    void purchaseInsufficientMoneyThrows() {
+    void purchaseInsufficientMoneyThrowsChangeException() {
         dispenser.insertMoney(new Money(Map.of(Coin.CENT_10, 1))); // 0.10 < price 0.20
         assertThatThrownBy(() -> dispenser.purchase(productId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith(NOT_ENOUGH_MONEY);
+                .isInstanceOf(ChangeException.class)
+                .hasMessageStartingWith(Constants.NOT_ENOUGH_MONEY);
     }
 
     @Test
-    void purchaseCantChangeThrows() {
+    void purchaseCantChangeThrowsChangeException() {
         dispenser.setDispenserMoney(new Money(Map.of()));
         dispenser.insertMoney(new Money(Map.of(Coin.EUR_1, 1))); // total 1.00, price 0.20, change 0.80
         assertThatThrownBy(() -> dispenser.purchase(productId))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageStartingWith(NOT_ENOUGH_MONEY_TO_CHANGE);
+                .isInstanceOf(ChangeException.class)
+                .hasMessageStartingWith(Constants.NOT_ENOUGH_MONEY_TO_CHANGE);
     }
 
     @Test
@@ -124,12 +129,12 @@ class DispenserTest {
 
         dispenser.insertMoney(new Money(Map.of(Coin.EUR_1, 1)));
         assertThatThrownBy(() -> dispenser.purchase(expired.getId()))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage(PRODUCT_EXPIRED);
+                .isInstanceOf(ProductExpiredException.class)
+                .hasMessage(Constants.PRODUCT_EXPIRED);
     }
 
     @Test
-    void purchaseOutOfStockThrows() {
+    void purchaseOutOfStockThrowsInsufficientStockException() {
         Product zeroStock = Product.builder()
                 .id(UUID.randomUUID())
                 .name("gone")
@@ -141,8 +146,8 @@ class DispenserTest {
 
         dispenser.insertMoney(new Money(Map.of(Coin.EUR_1, 1)));
         assertThatThrownBy(() -> dispenser.purchase(zeroStock.getId()))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage(PRODUCT_STOCK_ZERO);
+                .isInstanceOf(InsufficientStockException.class)
+                .hasMessage(Constants.PRODUCT_STOCK_ZERO);
     }
 
     @Test

@@ -1,13 +1,15 @@
 package com.vwdhub.vending.domain.model;
 
 import com.vwdhub.vending.common.Constants;
+import com.vwdhub.vending.domain.exception.ChangeException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.*;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MoneyTest {
 
@@ -15,7 +17,6 @@ class MoneyTest {
 
     @BeforeEach
     void setUp() {
-        // Provide coins in random order
         Map<Coin, Integer> unsortedMap = new LinkedHashMap<>();
         unsortedMap.put(Coin.CENT_10, 2);
         unsortedMap.put(Coin.EUR_1, 1);
@@ -46,8 +47,8 @@ class MoneyTest {
         Money sum = money.add(other);
         // Original money: {EUR_1=1, CENT_10=2, CENT_05=3}
         // Other: {CENT_20=2, CENT_10=1}
-        // Sum: {EUR_1=1, CENT_10=3, CENT_05=3, CENT_20=2} sorted desc
-        LinkedHashMap<Coin,Integer> expected = new LinkedHashMap<>();
+        // Sum: {EUR_1=1, CENT_10=3, CENT_05=3, CENT_20=2}
+        LinkedHashMap<Coin, Integer> expected = new LinkedHashMap<>();
         expected.put(Coin.EUR_1, 1);
         expected.put(Coin.CENT_20, 2);
         expected.put(Coin.CENT_10, 3);
@@ -66,8 +67,8 @@ class MoneyTest {
 
         // EUR_2 (0), EUR_1 (1), CENT_50 (0), CENT_20 (0), CENT_10 (1), CENT_05 (1)
         LinkedHashMap<Coin, Integer> expected = new LinkedHashMap<>();
-        expected.put(Coin.EUR_2,  0);
-        expected.put(Coin.EUR_1,  1);
+        expected.put(Coin.EUR_2, 0);
+        expected.put(Coin.EUR_1, 1);
         expected.put(Coin.CENT_50, 0);
         expected.put(Coin.CENT_20, 0);
         expected.put(Coin.CENT_10, 1);
@@ -79,12 +80,12 @@ class MoneyTest {
 
 
     @Test
-    void subtractNotSufficientCoinsThrowsIllegalState() {
+    void subtractNotSufficientCoinsThrowsChangeException() {
         Money tooMuch = new Money(Map.of(
-                Coin.CENT_10, 3 // money only has 2
+                Coin.CENT_10, 3
         ));
         assertThatThrownBy(() -> money.subtract(tooMuch))
-                .isInstanceOf(IllegalStateException.class)
+                .isInstanceOf(ChangeException.class)
                 .hasMessage(Constants.NOT_ENOUGH_MONEY_TO_CHANGE);
     }
 
@@ -97,7 +98,7 @@ class MoneyTest {
                 .containsExactly(Map.entry(Coin.EUR_1, 1));
         // request 0.35 => use {CENT_10=2, CENT_05=3? no, only need 0.35 => 0.10*2 + 0.05*3}
         Money changeFor035 = money.change(new BigDecimal("0.35"));
-        LinkedHashMap<Coin,Integer> expected = new LinkedHashMap<>();
+        LinkedHashMap<Coin, Integer> expected = new LinkedHashMap<>();
         expected.put(Coin.CENT_10, 2);
         expected.put(Coin.CENT_05, 3);
         assertThat(changeFor035.getCoins())
@@ -105,18 +106,18 @@ class MoneyTest {
     }
 
     @Test
-    void insufficientTotalAmountThrowsIllegalArgument() {
+    void insufficientTotalAmountThrowsChangeException() {
         BigDecimal request = new BigDecimal("2.00");
         // total available is 1.35
         assertThatThrownBy(() -> money.change(request))
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ChangeException.class)
                 .hasMessage(Constants.NOT_ENOUGH_MONEY_TO_CHANGE.concat(request.toString()));
     }
 
     @Test
     void canProvideChangeTest() {
         assertThat(money.canProvideChange(new BigDecimal("0.15"))).isTrue();   // 3×0.05
-        assertThat(money.canProvideChange(new BigDecimal("2.00"))).isFalse();  // too much
+        assertThat(money.canProvideChange(new BigDecimal("2.00"))).isFalse();
     }
 
     @Test
@@ -125,6 +126,6 @@ class MoneyTest {
         assertThat(empty.totalAmount()).isEqualByComparingTo(BigDecimal.ZERO);
         assertThat(empty.canProvideChange(BigDecimal.ZERO)).isTrue();
         assertThatThrownBy(() -> empty.change(new BigDecimal("0.05")))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(ChangeException.class);
     }
 }
