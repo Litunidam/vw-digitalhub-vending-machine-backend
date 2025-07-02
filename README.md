@@ -13,6 +13,8 @@ Backend service **Spring Boot** application for managing dispensers and products
 - [Getting Started](#getting-started)
 - [API Endpoints](#api-endpoints)
     - [Create Dispenser](#create-dispenser)
+    - [Get Dispenser](#get-dispenser)
+    - [Get Dispenser Status](#get-dispenser-status)
     - [Create Product](#create-product)
     - [Get Product Stock](#get-product-stock)
     - [Purchase Product](#purchase-product)
@@ -104,25 +106,102 @@ The service will be available at http://localhost:8080.
     Content-Type: application/json
   
 - Request Body:
-- 
+
     ```json
-    {
-      "products": [
-        {
-          "name": "Fanta",
-          "price": 2.70,
-          "stock": 25,
-          "expiration": "2026-07-31"
-        }
-      ],
-      "dispenserMoney": {
-        "COIN_1": 10,
-        "COIN_2": 5
-      },
-      "status": "AVAILABLE"
-    }
+      {
+        "products": [
+          {
+            "name": "Fanta",
+            "price": 2.70,
+            "stock": 25,
+            "expiration": "2026-07-31"
+          }
+        ],
+        "initialCoins": {
+          "coins": {
+          "EUR_2": 10,
+          "EUR_1": 10,
+          "CENT_50": 20,
+          "CENT_20": 20,
+          "CENT_10": 20,
+          "CENT_05": 20
+          }
+        },
+        "status": "AVAILABLE"
+      }
   
 - Response (200 OK):
+
+    ```json
+    {
+      "id": "c06b256e-fd00-4baf-ae1e-e5150fec80b3",
+      "products": {
+        "92a7a7d9-7bf7-4d20-a83f-90f86eae5ee9": {
+          "id": "92a7a7d9-7bf7-4d20-a83f-90f86eae5ee9",
+          "name": "Fanta",
+          "price": 2.7,
+          "stock": 25,
+          "expirationDate": "2026-07-31"
+        }
+      },
+      "dispenserMoney": {
+        "coins": {
+          "EUR_2": 10,
+          "EUR_1": 10,
+          "CENT_50": 20,
+          "CENT_20": 20,
+          "CENT_10": 20,
+          "CENT_05": 20
+        }
+      },
+      "status": "AVAILABLE",
+      "insertedMoney": null
+    }
+
+- ## Get Dispenser Status
+
+    ```bash
+    GET /api/v1/vending/dispenser/{dispenserId}/status
+
+- Response (200 OK):
+
+    ```json
+    {
+      "status": "AVAILABLE"
+    }
+
+- ## Get Dispenser
+
+    ```bash
+    GET /api/v1/vending/dispenser/{dispenserId}
+
+- Response (200 OK):
+
+    ```json
+    {
+      "id": "c06b256e-fd00-4baf-ae1e-e5150fec80b3",
+      "products": {
+        "92a7a7d9-7bf7-4d20-a83f-90f86eae5ee9": {
+          "id": "92a7a7d9-7bf7-4d20-a83f-90f86eae5ee9",
+          "name": "Fanta",
+          "price": 2.7,
+          "stock": 25,
+          "expirationDate": "2026-07-31"
+        }
+      },
+      "dispenserMoney": {
+        "coins": {
+          "EUR_2": 10,
+          "EUR_1": 10,
+          "CENT_50": 20,
+          "CENT_20": 20,
+          "CENT_10": 20,
+          "CENT_05": 20
+        }
+      },
+      "status": "AVAILABLE",
+      "insertedMoney": null
+    }
 
 - ## Create Product
 
@@ -192,10 +271,12 @@ The service will be available at http://localhost:8080.
         "price": 2.7,
         "stock": 10,
         "expirationDate": "2026-12-01"
-      }
+      },
       "change": {
-        "CENT_20": 1,
-        "CENT_10": 1
+        "coins": {
+          "CENT_20": 1,
+          "CENT_10": 1
+        }
       }
     }
   
