@@ -1,19 +1,31 @@
 package com.vwdhub.vending.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Getter
-public class Money {
-    private final Map<Coin, Integer> coins;
+import static com.vwdhub.vending.common.Constants.NOT_ENOUGH_MONEY_TO_CHANGE;
 
-    public Money(Map<Coin, Integer> coins) {
+@Getter
+@Builder
+@NoArgsConstructor
+public class Money {
+    private Map<Coin, Integer> coins;
+
+    @JsonCreator
+    public Money(@JsonProperty("coins") Map<Coin, Integer> coins) {
         this.coins = coins.entrySet()
                 .stream()
-                .sorted((entry1, entry2) -> Double.compare(entry2.getKey().getValue(), entry1.getKey().getValue()))
+                .sorted((entry1, entry2) -> entry2.getKey().getValue().compareTo(entry1.getKey().getValue()))
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
@@ -21,33 +33,57 @@ public class Money {
                         LinkedHashMap::new));
     }
 
-    public double totalAmount() {
+    public BigDecimal totalAmount() {
         return coins.entrySet()
                 .stream()
-                .mapToDouble(coin -> coin.getKey().getValue() * coin.getValue())
-                .sum();
+                .map(coin -> coin.getKey().getValue().multiply(BigDecimal.valueOf(coin.getValue())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public Money change(double amount) {
-        double remaining = amount;
+    public Money add(Money money) {
+        Map<Coin, Integer> newCoins = new LinkedHashMap<>(coins);
+        money.getCoins().forEach((coin, count) -> newCoins.merge(coin, count, Integer::sum));
+        return new Money(newCoins);
+    }
+
+    public Money subtract(Money money) {
+        Map<Coin, Integer> result = new EnumMap<>(Coin.class);
+        for (Coin coin : Coin.values()) {
+            int count = coins.getOrDefault(coin, 0) - money.coins.getOrDefault(coin, 0);
+            if (count < 0) {
+                throw new IllegalStateException(NOT_ENOUGH_MONEY_TO_CHANGE);
+            }
+            result.put(coin, count);
+        }
+        return new Money(result);
+    }
+
+    public Money change(BigDecimal amount) {
+        BigDecimal remaining = amount;
         Map<Coin, Integer> change = new LinkedHashMap<>();
 
         for (Map.Entry<Coin, Integer> entry : coins.entrySet()) {
             Coin coin = entry.getKey();
             int availableCoinAmount = entry.getValue();
-
-            int coinsNeeded = (int) Math.floor(remaining / coin.getValue());
-
+            int coinsNeeded = remaining.divide(coin.getValue()).setScale(0, RoundingMode.DOWN).intValue();
             if (coinsNeeded > 0 && availableCoinAmount > 0) {
                 int countLeft = Math.min(coinsNeeded, availableCoinAmount);
                 change.put(coin, countLeft);
-                remaining = remaining - (countLeft * coin.getValue());
+                remaining = remaining.subtract(coin.getValue().multiply(BigDecimal.valueOf(countLeft)));
             }
         }
-
-        if (remaining > 0) {
-            throw new IllegalArgumentException("We ran out of change for " + amount);
+        if (remaining.compareTo(BigDecimal.ZERO) > 0) {
+            throw new IllegalArgumentException(NOT_ENOUGH_MONEY_TO_CHANGE.concat(amount.toString()));
         }
         return new Money(change);
+    }
+
+    public boolean canProvideChange(BigDecimal amount) {
+        try {
+            change(amount);
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 }
