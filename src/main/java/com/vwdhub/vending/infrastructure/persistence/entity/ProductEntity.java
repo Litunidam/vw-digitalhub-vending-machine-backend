@@ -2,7 +2,7 @@ package com.vwdhub.vending.infrastructure.persistence.entity;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;

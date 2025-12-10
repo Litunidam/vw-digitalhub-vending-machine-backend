@@ -3,7 +3,7 @@ package com.vwdhub.vending.infrastructure.persistence.entity;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.UUID;
 
 

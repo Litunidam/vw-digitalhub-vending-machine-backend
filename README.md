@@ -55,8 +55,8 @@ The architecture follows **Hexagonal / Clean Architecture** and **DDD** principl
 
 ## Technology Stack
 
-- **Java 11**
-- **Spring Boot 2.7.12**
+- **Java 21**
+- **Spring Boot 3.3.10**
 - **Spring Data JPA**
 - **H2**, **PostgreSQL**
 - **Kafka**
@@ -68,7 +68,7 @@ The architecture follows **Hexagonal / Clean Architecture** and **DDD** principl
 
 ## Requirements
 
-- **JDK 11**
+- **JDK 21**
 - **Maven 3.6+**
 - **Docker**
 
